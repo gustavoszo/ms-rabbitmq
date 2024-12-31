@@ -1,4 +1,4 @@
-package br.com.alurafood.pedidos.configuration;
+package br.com.alura.avaliacao.configuration;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    @Value("${broker.queue.order.name}")
+    @Value("${broker.queue.evaluation.name}")
     private String queue;
 
     @Value("${broker.exchange.payment.name}")
@@ -34,7 +34,7 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding bindingPaymentOrder() {
+    public Binding bindingPaymentEvaluation() {
         return BindingBuilder.bind(queue())
                 .to(fanoutExchange());
     }
@@ -50,7 +50,6 @@ public class RabbitMQConfig {
     }
 
     // Forma de inicializar o RabbitMQ ao subir a aplicação
-
     @Bean
     public ApplicationListener<ApplicationReadyEvent> inicializeAdmin(RabbitAdmin rabbitAdmin){
         return event -> rabbitAdmin.initialize();

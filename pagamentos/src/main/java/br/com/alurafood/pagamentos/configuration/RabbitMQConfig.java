@@ -1,5 +1,6 @@
 package br.com.alurafood.pagamentos.configuration;
 
+import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -14,12 +15,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    @Value("${broker.queue.payment.name}")
-    private String queue;
+    @Value("${broker.exchange.payment.name}")
+    private String exchange;
 
     @Bean
-    public Queue queue() {
-        return new Queue(queue, false);
+    public FanoutExchange fanoutExchange() {
+        return new FanoutExchange(exchange);
     }
 
     @Bean
@@ -41,8 +42,10 @@ public class RabbitMQConfig {
     }
 
     // Forma de inicializar o RabbitMQ ao subir a aplicação
+    /*
     @Bean
     public ApplicationListener<ApplicationReadyEvent> inicializeAdmin(RabbitAdmin rabbitAdmin){
         return event -> rabbitAdmin.initialize();
     }
+    */
 }

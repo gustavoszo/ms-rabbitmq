@@ -12,11 +12,11 @@ public class PaymentProducer {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    @Value("${broker.queue.payment.name}")
-    private String queue;
+    @Value("${broker.exchange.payment.name}")
+    private String exchange;
 
     public void sendPayment(ResponsePaymentDto paymentDto) {
-        rabbitTemplate.convertAndSend("", queue, paymentDto);
+        rabbitTemplate.convertAndSend(exchange, "", paymentDto);
     }
 
 }
