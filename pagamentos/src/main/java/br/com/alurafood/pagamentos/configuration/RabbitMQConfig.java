@@ -48,4 +48,5 @@ public class RabbitMQConfig {
         return event -> rabbitAdmin.initialize();
     }
     */
+
 }

@@ -5,6 +5,7 @@ import br.com.alurafood.pedidos.entities.OrderItem;
 import br.com.alurafood.pedidos.repositories.projection.OrderProjection;
 import br.com.alurafood.pedidos.services.OrderService;
 import br.com.alurafood.pedidos.web.dto.RequestOrderDto;
+import br.com.alurafood.pedidos.web.dto.ResponseOrderExistsDto;
 import br.com.alurafood.pedidos.web.dto.ResponseOrderDto;
 import br.com.alurafood.pedidos.web.dto.mapper.OrderItemMapper;
 import br.com.alurafood.pedidos.web.dto.mapper.OrderMapper;
@@ -62,6 +63,12 @@ public class OrderController {
     public ResponseEntity<Void> updateOrderStatus(@PathVariable Long id) {
         orderService.updateOrderStatus(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/{id}/exists")
+    public ResponseEntity<ResponseOrderExistsDto> orderExists(@PathVariable Long id) {
+        var exists = orderService.orderExists(id);
+        return ResponseEntity.ok(new ResponseOrderExistsDto(exists));
     }
 
 }

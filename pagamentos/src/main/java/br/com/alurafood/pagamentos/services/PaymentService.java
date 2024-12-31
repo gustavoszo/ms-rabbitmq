@@ -1,5 +1,6 @@
 package br.com.alurafood.pagamentos.services;
 
+import br.com.alurafood.pagamentos.clients.OrderClient;
 import br.com.alurafood.pagamentos.entities.Payment;
 import br.com.alurafood.pagamentos.entities.enums.Status;
 import br.com.alurafood.pagamentos.exceptions.EntityNotFoundException;
@@ -18,6 +19,7 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final PaymentProducer paymentProducer;
+    private final OrderClient orderClient;
 
     @Transactional(readOnly = true)
     public Page<Payment> findAll(Pageable pageable)
@@ -28,24 +30,28 @@ public class PaymentService {
     @Transactional(readOnly = true)
     public Payment findById(Long id)
     {
-        return paymentRepository.findById(id).orElse(null);
+        return paymentRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException(String.format("Payment com id '%s' não encontrado", id)));
     }
 
     @Transactional
     public Payment create(Payment payment)
     {
+        var orderExists = orderClient.orderExists(payment.getOrder());
+        if (!orderExists.getExists()) throw new EntityNotFoundException(String.format("Order com id '%s' não encontrado", payment.getOrder()));
         return paymentRepository.save(payment);
     }
 
     @Transactional
     public void delete(Long id)
     {
-        paymentRepository.deleteById(id);
+        Payment payment = findById(id);
+        paymentRepository.delete(payment);
     }
 
     @Transactional
     public void confirmPayment(Long id) {
-        Payment payment = paymentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format("Order com id '%s' não encontrado", id)));
+        Payment payment = findById(id);
         payment.setStatus(Status.CONFIRMED);
 
         // envio de mensagem para o RabbitMQ Broker
@@ -54,7 +60,7 @@ public class PaymentService {
 
     @Transactional
     public void statusChange(Long id) {
-        Payment payment = paymentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format("Order com id '%s' não encontrado", id)));
+        Payment payment = findById(id);
         payment.setStatus(Status.CONFIRMED_WITHOUT_INTEGRATION);
     }
 }

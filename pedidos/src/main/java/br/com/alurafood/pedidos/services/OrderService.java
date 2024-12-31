@@ -46,19 +46,26 @@ public class OrderService {
     @Transactional(readOnly = true)
     public Order findById(Long id)
     {
-        return orderRepository.findById(id).orElse(null);
+        return orderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format("Order com id '%s' não encontrado", id)));
     }
 
     @Transactional
     public void delete(Long id)
     {
-        orderRepository.deleteById(id);
+        Order order = findById(id);
+        orderRepository.delete(order);
     }
 
     @Transactional
     public Order updateOrderStatus(Long id) {
-        Order order = orderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format("Order com id '%s' não encontrado", id)));
+        Order order = findById(id);
         order.setStatus(Status.PAID);
         return order;
+    }
+
+    public Boolean orderExists(Long id)
+    {
+        var order = orderRepository.findById(id).orElse(null);
+        return order != null;
     }
 }
