@@ -10,7 +10,13 @@ public class EvaluationConsumer {
 
     @RabbitListener(queues = "${broker.queue.evaluation.name}")
     public void listenPayment(ResponsePaymentDto paymentDto) {
-        System.out.println("Recebeu a mensagem: " + paymentDto.getOrder());
+        // System.out.println("Recebeu a mensagem: " + paymentDto.getOrder());
+        System.out.println(paymentDto.getId());
+        System.out.println(paymentDto.getCode());
+
+        if (paymentDto.getCode().equals("000")) {
+            throw new RuntimeException("não consegui processar");
+        }
     }
 
 }

@@ -1,9 +1,6 @@
 package br.com.alura.avaliacao.configuration;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.FanoutExchange;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -23,9 +20,22 @@ public class RabbitMQConfig {
     @Value("${broker.exchange.payment.name}")
     private String paymentExchange;
 
+    @Value("${broker.queue.evaluation-dlq.name}")
+    private String queueDlx;
+
+    @Value("${broker.exchange.payment-evaluation-dlx.name}")
+    private String paymentExchangeDlx;
+
     @Bean
     public Queue queue() {
-        return new Queue(queue, false);
+        return QueueBuilder.nonDurable(queue)
+                .deadLetterExchange(paymentExchangeDlx)
+                .build();
+    }
+
+    @Bean
+    public Queue queueDlx() {
+        return new Queue(queueDlx, false);
     }
 
     @Bean
@@ -34,9 +44,20 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public FanoutExchange fanoutExchangeDlx() {
+        return new FanoutExchange(paymentExchangeDlx);
+    }
+
+    @Bean
     public Binding bindingPaymentEvaluation() {
         return BindingBuilder.bind(queue())
                 .to(fanoutExchange());
+    }
+
+    @Bean
+    public Binding bindingPaymentEvaluationDlx() {
+        return BindingBuilder.bind(queueDlx())
+                .to(fanoutExchangeDlx());
     }
 
     @Bean
@@ -50,6 +71,7 @@ public class RabbitMQConfig {
     }
 
     // Forma de inicializar o RabbitMQ ao subir a aplicação
+
     @Bean
     public ApplicationListener<ApplicationReadyEvent> inicializeAdmin(RabbitAdmin rabbitAdmin){
         return event -> rabbitAdmin.initialize();

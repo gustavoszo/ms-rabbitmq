@@ -50,10 +50,11 @@ public class RabbitMQConfig {
     }
 
     // Forma de inicializar o RabbitMQ ao subir a aplicação
-
+    /*
     @Bean
     public ApplicationListener<ApplicationReadyEvent> inicializeAdmin(RabbitAdmin rabbitAdmin){
         return event -> rabbitAdmin.initialize();
     }
+    */
 
 }

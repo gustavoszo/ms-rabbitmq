@@ -15,7 +15,6 @@ public class PaymentConsumer {
 
     @RabbitListener(queues = "${broker.queue.order.name}")
     public void listenPayment(ResponsePaymentDto paymentDto) {
-        System.out.println("Recebeu a mensagem: " + paymentDto.getOrder());
         orderService.updateOrderStatus(paymentDto.getOrder());
     }
 
