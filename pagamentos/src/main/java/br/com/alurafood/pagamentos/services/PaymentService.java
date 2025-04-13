@@ -54,7 +54,7 @@ public class PaymentService {
         Payment payment = findById(id);
         payment.setStatus(Status.CONFIRMED);
 
-        // envio de mensagem para o RabbitMQ Broker
+        // envio de mensagem para o Rab bitMQ Broker
         paymentProducer.sendPayment(PaymentMapper.toResponsePaymentDto(payment));
     }
 
