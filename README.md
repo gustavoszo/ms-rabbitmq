@@ -31,9 +31,6 @@ A arquitetura do sistema utiliza **RabbitMQ**, o servidor **RabbitMQ** é execut
 
 ## Como Executar o RabbitMQ com Docker Compose
 
-cd seu-repositorio
-Configure as variáveis de ambiente, se necessário, para os microserviços. Isso pode incluir configurações de banco de dados, RabbitMQ, entre outros.
-
 Execute o Docker Compose para subir o serviço:
 
 ```bash
